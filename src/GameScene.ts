@@ -15,6 +15,9 @@ class GameScene extends egret.Sprite {
 	//線頭
 	private head: Grid;
 
+	//指針
+	private beginCol: number;
+
 	//當前位置
 	private cur: Grid;
 
@@ -58,6 +61,7 @@ class GameScene extends egret.Sprite {
 			this.road.push(2);
 			this.setRoad(this.road);
 		}, this);
+
 	}
 
 	/**
@@ -103,6 +107,7 @@ class GameScene extends egret.Sprite {
 		this.head.reset();
 		this.cur.reset();
 		this.dir.reset();
+		this.beginCol = 0;
 	}
 
 	/**
@@ -120,18 +125,24 @@ class GameScene extends egret.Sprite {
 		//資料
 		for (let i: number = 0; i < len; ++i) {
 
+			egret.error(JSON.stringify(this.cur));
+
 			let result: number = roadList[i];
 			let newType: number = this.getTypeByResult(result);
 			if (lastType == -1) {
 				//第一筆原地不動
-				this.cur.col = this.head.col;
+				this.beginCol = 0;
+				this.head.col = this.beginCol;
+				this.cur.col = this.beginCol;
 				this.cur.row = this.head.row;
 				this.dir.col = 0;
 				this.dir.row = 0;
 			}
 			else if (lastType != newType) {
 				//不同色要換欄，原地不動
-				this.cur.col = ++this.head.col;
+				this.beginCol++;
+				this.head.col = this.beginCol;
+				this.cur.col = this.beginCol;
 				this.cur.row = this.head.row;
 				this.dir.col = 0;
 				this.dir.row = 0;
@@ -144,12 +155,15 @@ class GameScene extends egret.Sprite {
 				this.dir.row = 0;
 
 				if (this.cur.row == 0) {
-					//第一列向右不畫線 但要移動head
+					//第一列向右不畫線
 				}
 				else {
 					this.drawLineList[this.head.col] = 1;
 				}
+			}
 
+			if (this.cur.row == 0 && this.dir.col > 0) {
+				this.beginCol++;
 			}
 
 			//移動並記錄資料
