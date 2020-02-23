@@ -21,12 +21,23 @@ class GameScene extends eui.Component {
 	//目標位置
 	private target: Grid;
 
-	private numCol: number;
-	private numRow: number;
+	private numCol: number = -1;
+	private numRow: number = -1;
 
 	private results: number[];
 
-	public aa: eui.Rect;
+	//EXML-------------------------------------------------
+
+	private container: eui.Group;
+
+	private playBtn: eui.Button;
+
+	private columnTf: eui.TextInput;
+	private rowTf: eui.TextInput;
+
+	private oddBtn: eui.Button;
+	private evenBtn: eui.Button;
+
 	/**
 	 * 
 	 */
@@ -38,33 +49,35 @@ class GameScene extends eui.Component {
 	}
 
 	private uiComplete(): void {
-		//建立牌路
-		this.createRoad(20, 4);
-
-		this.results = [];
-
-		let odd: RoadItem = new RoadItem();
-		odd.scaleX = odd.scaleY = 2;
-		this.addChild(odd);
-		odd.x = 500;
-		odd.refresh(RoadData.ODD, RoadData.LINE_NON);
-		odd.touchEnabled = true;
-		odd.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
+		this.playBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onPlay, this);
+		this.oddBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
+			if (this.numCol == -1)
+				return;
 			this.results.push(1);
 			this.drawBigRoad(this.results);
 		}, this);
-
-		let even: RoadItem = new RoadItem();
-		even.scaleX = even.scaleY = 2;
-		this.addChild(even);
-		even.x = 500;
-		even.y = 60;
-		even.refresh(RoadData.EVEN, RoadData.LINE_NON);
-		even.touchEnabled = true;
-		even.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
+		this.evenBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
+			if (this.numCol == -1)
+				return;
 			this.results.push(2);
 			this.drawBigRoad(this.results);
 		}, this);
+	}
+
+	private onPlay(): void {
+
+		let inputColumn: number = parseInt(this.columnTf.text);
+		let inputRow: number = parseInt(this.rowTf.text);
+
+		if (inputColumn && inputRow) {
+			//建立牌路
+			this.createRoad(inputColumn, inputRow);
+
+			this.results = [];
+		}
+		else {
+			window.alert("輸入錯誤!");
+		}
 	}
 
 	/**
@@ -91,7 +104,7 @@ class GameScene extends eui.Component {
 				let item: RoadItem = new RoadItem();
 				item.x = i * item.width;
 				item.y = j * item.height;
-				this.addChild(item);
+				this.container.addChild(item);
 				this.itemMap[i][j] = item;
 			}
 		}
@@ -101,7 +114,7 @@ class GameScene extends eui.Component {
 			let item: RoadItem = new RoadItem();
 			item.x = i * item.width;
 			item.y = j * item.height;
-			this.addChild(item);
+			this.container.addChild(item);
 		}
 
 		this.pre = new Grid();

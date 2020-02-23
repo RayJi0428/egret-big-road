@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <e:Skin class="GameSceneSkin" width="400" height="300" xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing">
-	<e:Rect id="aa" width="20" height="20" x="192" y="204"/>
+	<e:Rect id="aa" width="100%" height="100%" x="0" y="0" fillColor="0x333333"/>
+	<e:Group id="container" x="0" y="45"/>
+	<e:Group top="2" left="2">
+		<e:TextInput id="columnTf" width="100" restrict="0-9" maxChars="2" textColor="0x000000" prompt="column" top="2" left="2" x="0" y="0" scaleX="1" scaleY="1"/>
+		<e:TextInput id="rowTf" width="100" restrict="0-9" maxChars="2" textColor="0x000000" prompt="row" top="2" left="2" x="0" y="0" scaleX="1" scaleY="1"/>
+		<e:Button id="playBtn" label="Play" x="252" y="162" scaleX="1" scaleY="1" height="42"/>
+		<e:Button id="oddBtn" label="單" x="262" y="172" scaleX="1" scaleY="1" skinName="skins.OddButtonSkin"/>
+		<e:Button id="evenBtn" label="雙" x="272" y="182" scaleX="1" scaleY="1" skinName="skins.EvenButtonSkin"/>
+		<e:layout>
+			<e:HorizontalLayout gap="4"/>
+		</e:layout>
+	</e:Group>
 </e:Skin>

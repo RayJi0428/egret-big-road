@@ -18,6 +18,8 @@
 	"exmls": [
 		"resource/eui_skins/ButtonSkin.exml",
 		"resource/eui_skins/CheckBoxSkin.exml",
+		"resource/eui_skins/EvenButtonSkin.exml",
+		"resource/eui_skins/OddButtonSkin.exml",
 		"resource/eui_skins/GameSceneSkin.exml",
 		"resource/eui_skins/HScrollBarSkin.exml",
 		"resource/eui_skins/HSliderSkin.exml",
