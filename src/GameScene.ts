@@ -1,7 +1,7 @@
 /**
  * 主畫面
  */
-class GameScene extends egret.Sprite {
+class GameScene extends eui.Component {
 
 	//資料二維陣列(head;type)
 	private dataMap: RoadData[][];
@@ -25,13 +25,19 @@ class GameScene extends egret.Sprite {
 	private numRow: number;
 
 	private results: number[];
+
+	public aa: eui.Rect;
 	/**
 	 * 
 	 */
 	public constructor() {
 		super();
 
+		this.once(eui.UIEvent.COMPLETE, this.uiComplete, this);
+		this.skinName = "GameSceneSkin";
+	}
 
+	private uiComplete(): void {
 		//建立牌路
 		this.createRoad(20, 4);
 
@@ -59,7 +65,6 @@ class GameScene extends egret.Sprite {
 			this.results.push(2);
 			this.drawBigRoad(this.results);
 		}, this);
-
 	}
 
 	/**
