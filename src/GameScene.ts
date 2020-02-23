@@ -32,7 +32,7 @@ class GameScene extends egret.Sprite {
 		super();
 
 		//建立牌路
-		this.createRoad(20, 4);
+		this.createRoad(4, 4);
 
 		this.results = [];
 
@@ -107,6 +107,16 @@ class GameScene extends egret.Sprite {
 		this.target.reset();
 	}
 
+	private checkColumn(col: number): void {
+		//新增欄位
+		if (!this.dataMap[col]) {
+			this.dataMap[col] = [];
+			for (let j: number = 0; j < this.numRow; ++j) {
+				this.dataMap[col][j] = new RoadData();
+			}
+			this.drawLineList.push(false);
+		}
+	}
 	/**
 	 * 繪製大路
 	 * @param {results} 結果的一維陣列(1,2,3,4)
@@ -123,45 +133,48 @@ class GameScene extends egret.Sprite {
 		let rCount: number = 0;
 		//資料------------------------------------------------------------------
 		for (let i: number = 0; i < len; ++i) {
+			if (i == len - 1) {
+				egret.log("A");
+			}
 			let targetType: number = this.getTypeByResult(results[i]);
 
-			//這次預計要放置的位置 = 上次位置 + 方向
-			this.target.setup(this.pre.head, this.pre.col + this.dir.col, this.pre.row + this.dir.row);
-
-			//新增欄位
-			if (this.target.col >= this.numCol) {
-				this.dataMap[this.target.col] = [];
-				for (let j: number = 0; j < this.numRow; ++j) {
-					this.dataMap[this.target.col][j] = new RoadData();
-				}
-				this.drawLineList.push(false);
-			}
-			if (this.target.col == 0 && this.target.row == 0) {
+			if (i == 0) {
 				//第一筆原地不動(並設定方向向下)
 				this.dir.toBottom();
 			}
 			else if (targetType != this.dataMap[this.pre.col][this.pre.row].type) {
-				//與上次結果不同色要換欄，回到第一列原地不動
+				//不同色，換欄回到第一列原地不動
 				let newHead: number = this.pre.head + (this.pre.row == 0 ? rCount : 0) + 1;
 				this.target.setup(newHead, newHead, 0);
+				this.checkColumn(this.target.col);
+
 				//索引重新開始
 				rCount = 0;
 				//設定方向向下
 				this.dir.toBottom();
 			}
-			else if (this.target.row >= this.numRow ||
-				this.dataMap[this.target.col][this.target.row].isFull) {
-				//向下超過邊界 或 未到底但下方不為空(轉右)
-				this.dir.toRight();
-				//重新設定目標
+			else {
+				//同色
+				//這次預計要放置的位置 = 上次位置 + 方向
 				this.target.setup(this.pre.head, this.pre.col + this.dir.col, this.pre.row + this.dir.row);
+				this.checkColumn(this.target.col);
 
-				if (this.target.row != 0) {
-					//非第一列有轉右的話要記錄起來
-					this.drawLineList[this.target.head] = true;
+				if (this.target.row >= this.numRow ||
+					this.dataMap[this.target.col][this.target.row].isFull) {
+					//向下超過邊界 或 未到底但下方不為空(轉右)
+					this.dir.toRight();
+					//重新設定目標
+					this.target.setup(this.pre.head, this.pre.col + this.dir.col, this.pre.row + this.dir.row);
+					this.checkColumn(this.target.col);
+
+					if (this.target.row != 0) {
+						//非第一列有轉右的話要記錄起來
+						this.drawLineList[this.target.head] = true;
+					}
 				}
 			}
 
+			//計算向右數量
 			if (this.dir.col > 0) {
 				rCount++;
 			}
@@ -170,10 +183,6 @@ class GameScene extends egret.Sprite {
 			targetData.head = this.target.head;
 			targetData.type = targetType;
 
-			//線段類型處理
-			if (this.target.row == 0) {
-				
-			}
 			//紀錄最後一次節點資料
 			this.pre.copy(this.target);
 		}
@@ -181,6 +190,8 @@ class GameScene extends egret.Sprite {
 		this.dataMap.reverse();
 		this.dataMap.length = this.numCol;
 		this.dataMap.reverse();
+
+		egret.error(this.dataMap.length);
 
 		//顯像------------------------------------------------------------------
 		for (let ci: number = 0; ci < this.numCol; ++ci) {
@@ -208,8 +219,11 @@ class GameScene extends egret.Sprite {
 							//左邊是自己人
 							line = RoadData.LINE_LEFT | RoadData.LINE_RIGHT;
 						}
-						else {
+						else if (this.dataMap[ci][ri - 1] && data.head == this.dataMap[ci][ri - 1].head) {
 							line = RoadData.LINE_UP | RoadData.LINE_DOWN;
+						}
+						else {
+							line = RoadData.LINE_LEFT | RoadData.LINE_RIGHT;
 						}
 					}
 				}
