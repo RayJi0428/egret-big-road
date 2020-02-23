@@ -9,6 +9,7 @@
 		"libs/modules/promise/promise.js"
 	],
 	"game": [
+		"bin-debug/RoadData.js",
 		"bin-debug/GameScene.js",
 		"bin-debug/Grid.js",
 		"bin-debug/LoadingUI.js",

@@ -33,9 +33,9 @@ egret_native.egretStart = function () {
         //----auto option start----
 		entryClassName: "Main",
 		frameRate: 30,
-		scaleMode: "noScale",
-		contentWidth: 640,
-		contentHeight: 480,
+		scaleMode: "showAll",
+		contentWidth: 550,
+		contentHeight: 150,
 		showPaintRect: false,
 		showFPS: false,
 		fpsStyles: "x:0,y:0,size:12,textColor:0xffffff,bgAlpha:0.9",

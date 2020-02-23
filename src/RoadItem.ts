@@ -1,34 +1,17 @@
 /**
- * 型態定義
- */
-enum TYPE {
-	NON,//空
-	ODD,//單
-	EVEN//雙
-}
-
-/**
- * 線段定義(bit flag)
- */
-class LINE {
-	public static NON: number = 0;
-	public static UP: number = 1;
-	public static DOWN: number = 2;
-	public static LEFT: number = 4;
-	public static RIGHT: number = 8;
-}
-/**
  * 路子(單雙/大小 等等...)
  */
 class RoadItem extends egret.Sprite {
 
 	private tf: egret.TextField;
 
+	private lineContainer: egret.DisplayObjectContainer;
+
 	private static LINE_DEFINE: { flag: number, endX: number, endY: number }[] = [
-		{ flag: LINE.UP, endX: 12, endY: 0 },
-		{ flag: LINE.DOWN, endX: 12, endY: 24 },
-		{ flag: LINE.LEFT, endX: 0, endY: 12 },
-		{ flag: LINE.RIGHT, endX: 24, endY: 12 }
+		{ flag: RoadData.LINE_UP, endX: 12, endY: 0 },
+		{ flag: RoadData.LINE_DOWN, endX: 12, endY: 24 },
+		{ flag: RoadData.LINE_LEFT, endX: 0, endY: 12 },
+		{ flag: RoadData.LINE_RIGHT, endX: 24, endY: 12 }
 	];
 	/**
 	 * ctor
@@ -53,7 +36,10 @@ class RoadItem extends egret.Sprite {
 
 		this.addChild(this.tf);
 
-		this.refresh(TYPE.NON, LINE.NON);
+		this.lineContainer = new egret.DisplayObjectContainer();
+		this.addChild(this.lineContainer);
+
+		this.refresh(RoadData.NON, RoadData.LINE_NON);
 	}
 
 	/**
@@ -63,24 +49,23 @@ class RoadItem extends egret.Sprite {
 
 		let lineColor: number = 0;
 		switch (type) {
-			case TYPE.NON:
+			case RoadData.NON:
 				this.tf.text = "";
 				break;
-			case TYPE.ODD:
+			case RoadData.ODD:
 				this.tf.text = "單";
 				this.tf.textColor = 0xff0000;
 				lineColor = 0xffffff;
 				break;
-			case TYPE.EVEN:
+			case RoadData.EVEN:
 				this.tf.text = "雙";
 				this.tf.textColor = 0x00ccff;
 				lineColor = 0xffffff;
 				break;
 		}
 
-		if (type == TYPE.NON) {
-			return;
-		}
+		this.lineContainer.removeChildren();
+
 		RoadItem.LINE_DEFINE.forEach((define: { flag: number, endX: number, endY: number }) => {
 			if (flag & define.flag) {
 				let line: egret.Shape = new egret.Shape();
@@ -88,7 +73,7 @@ class RoadItem extends egret.Sprite {
 				line.graphics.moveTo(12, 12);
 				line.graphics.lineTo(define.endX, define.endY);
 				line.graphics.endFill();
-				this.addChild(line);
+				this.lineContainer.addChild(line);
 			}
 		});
 	}
