@@ -31,8 +31,9 @@ class GameScene extends egret.Sprite {
 	public constructor() {
 		super();
 
+
 		//建立牌路
-		this.createRoad(4, 4);
+		this.createRoad(20, 4);
 
 		this.results = [];
 
@@ -67,14 +68,16 @@ class GameScene extends egret.Sprite {
 	 */
 	private createRoad(numCol: number, numRow: number): void {
 
-		this.numCol = numCol;
+		//實際只記錄numCol-1的資料，最後一欄永遠空白，實現跑不到底的效果
+		this.numCol = numCol - 1;
 		this.numRow = numRow;
 
 		this.dataMap = [];
 		this.itemMap = [];
 		this.drawLineList = [];
 
-		for (let i: number = 0; i < numCol; ++i) {
+		let i: number = 0;
+		for (i = 0; i < this.numCol; ++i) {
 			this.dataMap[i] = [];
 			this.itemMap[i] = [];
 			this.drawLineList.push(false);
@@ -87,6 +90,15 @@ class GameScene extends egret.Sprite {
 				this.itemMap[i][j] = item;
 			}
 		}
+
+		//特別多創一欄item，營造跑不到底的效果
+		for (let j: number = 0; j < numRow; ++j) {
+			let item: RoadItem = new RoadItem();
+			item.x = i * item.width;
+			item.y = j * item.height;
+			this.addChild(item);
+		}
+
 		this.pre = new Grid();
 		this.dir = new Grid();
 		this.target = new Grid();
@@ -133,18 +145,22 @@ class GameScene extends egret.Sprite {
 		let rCount: number = 0;
 		//資料------------------------------------------------------------------
 		for (let i: number = 0; i < len; ++i) {
-			if (i == len - 1) {
-				egret.log("A");
-			}
+
 			let targetType: number = this.getTypeByResult(results[i]);
 
 			if (i == 0) {
+				this.target.setup(0, 0, 0);
 				//第一筆原地不動(並設定方向向下)
 				this.dir.toBottom();
 			}
 			else if (targetType != this.dataMap[this.pre.col][this.pre.row].type) {
 				//不同色，換欄回到第一列原地不動
 				let newHead: number = this.pre.head + (this.pre.row == 0 ? rCount : 0) + 1;
+
+				//明哥需求，新紀錄一定要在畫面內...
+				if (newHead < this.pre.col - this.numCol + 1) {
+					newHead = this.pre.col - this.numCol + 1;
+				}
 				this.target.setup(newHead, newHead, 0);
 				this.checkColumn(this.target.col);
 
@@ -187,11 +203,10 @@ class GameScene extends egret.Sprite {
 			this.pre.copy(this.target);
 		}
 
+		//只保留可視範圍資料欄
 		this.dataMap.reverse();
 		this.dataMap.length = this.numCol;
 		this.dataMap.reverse();
-
-		egret.error(this.dataMap.length);
 
 		//顯像------------------------------------------------------------------
 		for (let ci: number = 0; ci < this.numCol; ++ci) {
